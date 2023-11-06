@@ -3,11 +3,13 @@ import dashjs from '../dashjs/dash.all.min.js';
 import DPlayer from '../dplayer/DPlayer.min.js'
 import './App.css';
 
-
 function setupPlay(url,token) {
   const dp = new DPlayer({
     container: document.getElementById('video'),
     autoplay:true,
+    subtitle: {
+      url:""
+    },
     video: {
       url: url,
       type: 'customDash',
@@ -29,11 +31,14 @@ function setupPlay(url,token) {
             streaming:{
               text: {
                 defaultEnabled: false,
+              },delay: { 
+                liveDelayFragmentCount: 0 
               }
             }
           })
-          player.container.classList.add('dplayer-loading');
           dash_player.setAutoPlay(true);
+          dash_player.attachTTMLRenderingDiv(player.template.subtitle)
+          player.container.classList.add('dplayer-loading');
           player.plugins.dash = dash_player;
           player.container.setAttribute("inert","")
           player.controller.hide()
@@ -41,6 +46,12 @@ function setupPlay(url,token) {
             player.play()
             player.container.removeAttribute("inert")
           })
+          player.events.on('subtitle_show', () => {
+            dash_player.enableText(true);
+          });
+          player.events.on('subtitle_hide', () => {  
+            dash_player.enableText(false);
+          });
         }
       }
     }
@@ -49,7 +60,6 @@ function setupPlay(url,token) {
 }
 
 const App = () => {
-
   useEffect(()=> {
     let token = ''
     let username = ''
@@ -112,7 +122,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <div id="video"></div>
+      <div id="video" className='video'></div>
     </div>
   );
 }
