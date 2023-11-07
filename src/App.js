@@ -14,6 +14,7 @@ function setupPlay(url,token) {
         pic:'http://localhost:4000/images/B649d56d13c63ce869.jpeg',
         customType: {
           customShaka: function (video,player) {
+              let hasAutoPlay = false;
               let shakaPlayer = new shaka.Player(video)
               shakaPlayer.configure({
                 drm: {
@@ -36,10 +37,13 @@ function setupPlay(url,token) {
               player.container.setAttribute("inert","")
               player.controller.hide()
               player.on("canplay",()=>{
-                player.container.classList.remove('dplayer-loading');
-                player.play()
-                player.subtitle.hide()
-                player.container.removeAttribute("inert")
+                if(!hasAutoPlay) {
+                  hasAutoPlay = true;
+                  player.container.classList.remove('dplayer-loading');
+                  player.play()
+                  player.subtitle.hide()
+                  player.container.removeAttribute("inert")
+                }
               })
               player.events.on('subtitle_show', () => {
                 shakaPlayer.setTextTrackVisibility(1)
