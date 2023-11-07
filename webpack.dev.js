@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const config = {
     mode: 'development',
     entry : "./src/index.js",
@@ -25,9 +26,7 @@ const config = {
 			},{
 				test: /\.css$/,
                 exclude: /node_modules/,
-				use: {
-                    loader :'css-loader'
-                }
+                use: [MiniCssExtractPlugin.loader, 'css-loader']
 			},
 		],
 	},
@@ -38,6 +37,9 @@ const config = {
             inject: true,
             minify: true,
         }),
+        new MiniCssExtractPlugin({
+			filename: './src/App.css',
+		})
     ],
     devServer: {
         open: ['index.html'],
@@ -60,6 +62,12 @@ const config = {
                 host:'localhost',
                 target: 'http://127.0.0.1:5000',
                 secure: false
+            },
+            '/images/B649d56d13c63ce869.jpeg': {
+                host:'localhost',
+                target: 'https://lbsugc.cdn.bcebos.com',
+                secure: false,
+                changeOrigin: true
             }
         }
     }

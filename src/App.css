@@ -1,1 +1,25 @@
 
+body {
+    background-color: black;
+}
+
+.root {
+    height: 100%;
+	width: 100%;
+}
+.App {
+    width: 80%;
+    height: 100%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+.video::cue{
+    background-color: transparent;
+    /* 设置字体颜色 */
+    color: red; 
+}
+.subtitles {
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
