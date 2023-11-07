@@ -91,19 +91,20 @@ const App = () => {
               shakaPlayer.getNetworkingEngine().registerResponseFilter((type, response, context) => {
                 if(type === shaka.net.NetworkingEngine.RequestType.LICENSE) {
                   let deviceId = response.headers['x-auth-device-id'];
-                  console.log(deviceId)
-                  let xhr = new XMLHttpRequest()
-                  xhr.open('GET', 'http://localhost:4000/video_info?deviceId=' + deviceId + '&username=' + username + '&password=' + password);
-                  xhr.setRequestHeader('Content-type', 'application/json');
-                  xhr.onload = function () {
-                    if (this.status === 200) {
-                      let res = JSON.parse(this.responseText)
-                      let url = res['url'];
-                      let token = res['token']
-                      setupPlay(url, token)
+                  if(deviceId !== undefined) {
+                    let xhr = new XMLHttpRequest()
+                    xhr.open('GET', 'http://localhost:4000/video_info?deviceId=' + deviceId + '&username=' + username + '&password=' + password);
+                    xhr.setRequestHeader('Content-type', 'application/json');
+                    xhr.onload = function () {
+                      if (this.status === 200) {
+                        let res = JSON.parse(this.responseText)
+                        let url = res['url'];
+                        let token = res['token']
+                        setupPlay(url, token)
+                      }
                     }
+                    xhr.send();
                   }
-                  xhr.send();
                 }
               })
               shakaPlayer.load(video.src);
