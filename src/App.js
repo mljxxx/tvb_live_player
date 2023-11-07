@@ -7,7 +7,6 @@ import './App.css';
 function setupPlay(url,token) {
   const dp = new DPlayer({
       container: document.getElementById('video'),
-      autoplay:true,
       subtitle: {url:""},
       video: {
         url: url,
@@ -37,6 +36,7 @@ function setupPlay(url,token) {
               player.container.setAttribute("inert","")
               player.controller.hide()
               player.on("canplay",()=>{
+                player.container.classList.remove('dplayer-loading');
                 player.play()
                 player.subtitle.hide()
                 player.container.removeAttribute("inert")
@@ -52,7 +52,6 @@ function setupPlay(url,token) {
         }
       }
   });
-  dp.play();
 }
 
 const App = () => {
@@ -115,7 +114,6 @@ const App = () => {
           }
         }
       });
-      dp.play();
     }
   }, []);
 
