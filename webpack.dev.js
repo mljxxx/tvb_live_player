@@ -63,6 +63,11 @@ const config = {
                 target: 'http://127.0.0.1:5000',
                 secure: false
             },
+            '/get_user_info':{
+                host:'localhost',
+                target: 'http://127.0.0.1:5000',
+                secure: false
+            },
             '/images/B649d56d13c63ce869.jpeg': {
                 host:'localhost',
                 target: 'https://lbsugc.cdn.bcebos.com',

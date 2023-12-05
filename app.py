@@ -1,5 +1,5 @@
 from flask import Flask, request
-import requests,json,time
+import requests,json,time,os
 from urllib3.contrib import pyopenssl
 pyopenssl.inject_into_urllib3()
 proxies = {
@@ -15,12 +15,13 @@ def get_video_info():
     username = request.args.get("username")
     password = request.args.get("password")
     token = request.args.get("token")
+    video_id = request.args.get("videoId")
     if device_id:
-        return get_play_url_with_user_info(username,password,device_id)
+        return get_play_url_with_user_info(username,password,device_id,video_id)
     else:
-        return get_play_url_with_token(token)
+        return get_play_url_with_token(token,video_id)
 
-def get_play_url_with_user_info(username,password,device_id):
+def get_play_url_with_user_info(username,password,device_id,video_id):
     s = requests.session()
     s.post(
         'https://www.mytvsuper.com/api/auth/login/',
@@ -45,13 +46,17 @@ def get_play_url_with_user_info(username,password,device_id):
     # print(user_info)
     token = user_info['user']['token']
     # print(token)
-    return get_play_url_with_token(token)
+    return get_play_url_with_token(token,video_id)
     
 
-def get_play_url_with_token(token):
+def get_play_url_with_token(token,video_id):
     s = requests.session()
     ts = int(round(time.time() * 1000))
-    check_response = s.get('https://user-api.mytvsuper.com/v1/channel/checkout?platform=web&network_code=J&ts='+str(ts),headers={
+    if len(video_id) > 0:
+        url = 'https://user-api.mytvsuper.com/v1/video/checkout?platform=web&video_id=%s&ts=%s' % (video_id, str(ts))
+    else:
+        url = 'https://user-api.mytvsuper.com/v1/channel/checkout?platform=web&network_code=J&ts='+str(ts)
+    check_response = s.get(url,headers={
         'authorization': 'Bearer '+ token
     },proxies=proxies)
     if check_response.status_code != 200:
@@ -60,11 +65,20 @@ def get_play_url_with_token(token):
         video_info = json.loads(check_response.text)
         # print(video_info)
         streaming_path = video_info['profiles'][0]['streaming_path']
+        content_id = video_info['content_id']
         # # print(streaming_path)
         mpd_url = s.get(streaming_path,verify=False,proxies=proxies, allow_redirects=False).headers['Location']
         # print("mpd:",mpd_url,"token",token,sep='\n')
         res = {
             "url" : mpd_url,
-            "token": token
+            "token": token,
+            "content_id" :content_id
         }
         return json.dumps(res)
+    
+@app.route("/get_user_info")
+def get_user_info_from_local():
+    if os.path.exists('./user_info.json'):
+        with open('./user_info.json','r') as f:
+            user_info = json.load(f)
+    return json.dumps(user_info)
