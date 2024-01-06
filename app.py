@@ -16,12 +16,13 @@ def get_video_info():
     password = request.args.get("password")
     token = request.args.get("token")
     video_id = request.args.get("videoId")
+    platform = request.args.get("platform")
     if device_id:
-        return get_play_url_with_user_info(username,password,device_id,video_id)
+        return get_play_url_with_user_info(username,password,device_id,video_id,platform)
     else:
-        return get_play_url_with_token(token,video_id)
+        return get_play_url_with_token(token,video_id,platform)
 
-def get_play_url_with_user_info(username,password,device_id,video_id):
+def get_play_url_with_user_info(username,password,device_id,video_id,platform):
     s = requests.session()
     s.post(
         'https://www.mytvsuper.com/api/auth/login/',
@@ -46,16 +47,16 @@ def get_play_url_with_user_info(username,password,device_id,video_id):
     # print(user_info)
     token = user_info['user']['token']
     # print(token)
-    return get_play_url_with_token(token,video_id)
+    return get_play_url_with_token(token,video_id,platform)
     
 
-def get_play_url_with_token(token,video_id):
+def get_play_url_with_token(token,video_id,platform):
     s = requests.session()
     ts = int(round(time.time() * 1000))
     if len(video_id) > 0:
-        url = 'https://user-api.mytvsuper.com/v1/video/checkout?platform=web&video_id=%s&ts=%s' % (video_id, str(ts))
+        url = 'https://user-api.mytvsuper.com/v1/video/checkout?platform=%s&video_id=%s' % (platform,video_id)
     else:
-        url = 'https://user-api.mytvsuper.com/v1/channel/checkout?platform=web&network_code=J&ts='+str(ts)
+        url = 'https://user-api.mytvsuper.com/v1/channel/checkout?platform=%s&network_code=J&ts=%s' %(platform,str(ts))
     check_response = s.get(url,headers={
         'authorization': 'Bearer '+ token
     },proxies=proxies)

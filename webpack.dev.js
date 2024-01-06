@@ -73,6 +73,12 @@ const config = {
                 target: 'https://lbsugc.cdn.bcebos.com',
                 secure: false,
                 changeOrigin: true
+            },
+            '/fps': {
+                host:'localhost',
+                target: 'https://fps.drm.tvb.com',
+                secure: false,
+                changeOrigin: true
             }
         }
     }
